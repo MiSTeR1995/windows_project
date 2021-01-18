@@ -1,3 +1,8 @@
+// модули для работы слайдера
+import $ from 'jquery';
+import 'slick-carousel';
+
+// слайдер для работы мобильной версии
 $(document).ready(function() {
     $('.glazing_slider').slick({
         infinite: true,
@@ -67,4 +72,4 @@ $(document).ready(function() {
             }
         }]
     });
-});   
+});
