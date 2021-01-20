@@ -7,7 +7,6 @@ function openModal(modalSelector, modalTimerId) {
     document.body.classList.add('modal-open'); // класс из bootstrap
     // document.body.style.overflow = 'hidden';
 
-    console.log(modalTimerId);
     if (modalTimerId) {
         clearInterval(modalTimerId);
     }
@@ -39,9 +38,11 @@ const modal = () => {
             });
         });
 
+        // закрытие по крестику
         close.addEventListener('click', () => {
             closeModal(modalSelector);
         });
+
         // закрытие по нажатию на подложку
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -57,7 +58,7 @@ const modal = () => {
         });
     };
 
-    const modalTimerId = setTimeout(() => openModal('.popup', modalTimerId), 5000);
+    const modalTimerId = setTimeout(() => openModal('.popup', modalTimerId), 60000);
 
     bindModal('.popup_engineer_btn', '.popup_engineer', '.popup_engineer .popup_close', modalTimerId);
     bindModal('.phone_link', '.popup', '.popup .popup_close', modalTimerId);
