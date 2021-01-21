@@ -7,6 +7,7 @@ const browsersync = require('browser-sync');
 
 // Путь сборки
 const dist = './dist/';
+// const dist = 'C:/Programming/OpenServer/OpenServer/domains/proj';
 
 // Задача для отслеживания изменений в html-файле
 // index.html из src перемещаем в dist и запускаем browsersync, чтобы перезагрузить страницу
