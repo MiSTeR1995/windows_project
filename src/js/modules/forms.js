@@ -1,14 +1,10 @@
-const forms = () => {
+import checkNumInputs from './checkNumInputs';
+
+const forms = (state) => {
     const form = document.querySelectorAll('form');
     const inputs = document.querySelectorAll('input');
-    const phoneInputs = document.querySelectorAll('input[name="user_phone"]');
 
-    // только числа в полях для телефоного номера
-    phoneInputs.forEach(item => {
-        item.addEventListener('input', () => {
-            item.value = item.value.replace(/\D/,''); // замена не числа на пустую строку
-        });
-    });
+    checkNumInputs('input[name="user_phone"]');
 
     const message = {
         loading: 'Загрузка...',
@@ -46,6 +42,14 @@ const forms = () => {
 
             // сбор данных в форме через FormData
             const formData = new FormData(item);
+
+            // для формы в калькуляторе с данными из него. Динамические данные
+            if (item.getAttribute('data-calc') === 'end') {
+                // запись объекта с данными в formData
+                for (let key in state) {
+                    formData.append(key, state[key]);
+                }
+            }
 
             postData('assets/server.php',formData)
                 .then(res => {
