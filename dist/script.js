@@ -17799,6 +17799,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/forms */ "./src/js/modules/forms.js");
 /* harmony import */ var _modules_changeModalState__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/changeModalState */ "./src/js/modules/changeModalState.js");
 /* harmony import */ var _modules_timer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/timer */ "./src/js/modules/timer.js");
+/* harmony import */ var _modules_images__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/images */ "./src/js/modules/images.js");
+
 
 
 
@@ -17811,14 +17813,14 @@ window.addEventListener('DOMContentLoaded', function () {
   var modalState = {};
   var deadline = '2021-02-01';
   Object(_modules_changeModalState__WEBPACK_IMPORTED_MODULE_4__["default"])(modalState);
-  Object(_modules_modal__WEBPACK_IMPORTED_MODULE_1__["default"])();
+  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])(modalState);
+  Object(_modules_modal__WEBPACK_IMPORTED_MODULE_1__["default"])(modalState);
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.glazing_slider', '.glazing_block', '.glazing_content', 'active'); // в соответствии с версткой класс табов выбран no_click, т.к остальные другие меняют свое название. Это не ок
   // также внутри контента два подряд идущих блока, можно сделать строгое соответствие в  селекторе
 
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.decoration_slider', '.no_click', '.decoration_content > div > div', 'after_click');
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])('.balcon_icons', '.balcon_icons_img', '.big_img > img', 'do_image_more', 'inline-block');
-  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])(modalState);
-  Object(_modules_timer__WEBPACK_IMPORTED_MODULE_5__["default"])('.container1', deadline);
+  Object(_modules_timer__WEBPACK_IMPORTED_MODULE_5__["default"])('.container1', deadline); // images();
 });
 
 /***/ }),
@@ -17887,6 +17889,7 @@ var changeModalState = function changeModalState(state) {
         }
 
         console.log(state);
+        console.log(state.form);
       });
     });
   } // запись формы окна
@@ -17957,6 +17960,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
 /* harmony import */ var regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _checkNumInputs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./checkNumInputs */ "./src/js/modules/checkNumInputs.js");
+/* harmony import */ var _modal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modal */ "./src/js/modules/modal.js");
+
 
 
 
@@ -17967,6 +17972,8 @@ __webpack_require__.r(__webpack_exports__);
 var forms = function forms(state) {
   var form = document.querySelectorAll('form');
   var inputs = document.querySelectorAll('input');
+  var windows = document.querySelectorAll('[data-modal]'); // все модальные окна со страницы
+
   Object(_checkNumInputs__WEBPACK_IMPORTED_MODULE_5__["default"])('input[name="user_phone"]');
   var message = {
     loading: 'Загрузка...',
@@ -18031,13 +18038,16 @@ var forms = function forms(state) {
       postData('assets/server.php', formData).then(function (res) {
         console.log(res);
         statusMessage.textContent = message.succes;
+        setTimeout(function () {
+          Object(_modal__WEBPACK_IMPORTED_MODULE_6__["closeAllModals"])(windows);
+        }, 2000);
       }).catch(function () {
         statusMessage.textContent = message.failure;
       }).finally(function () {
         clearInputs();
         setTimeout(function () {
           statusMessage.remove(); // удалить элемент со страницы
-        }, 5000);
+        }, 2000);
       });
     });
   });
@@ -18047,16 +18057,60 @@ var forms = function forms(state) {
 
 /***/ }),
 
+/***/ "./src/js/modules/images.js":
+/*!**********************************!*\
+  !*** ./src/js/modules/images.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var images = function images() {
+  var imgPopup = document.createElement('div');
+  var workSection = document.querySelector('.works');
+  var bigImage = document.createElement('img');
+  imgPopup.classList.add('popup');
+  workSection.appendChild(imgPopup); // 3 варианта задания стилей. Через класс в css, через инлайн стили, черезе cssText
+
+  imgPopup.style.justifyContent = 'center';
+  imgPopup.style.alignItems = 'center';
+  imgPopup.style.display = 'none';
+  imgPopup.appendChild(bigImage);
+  workSection.addEventListener('click', function (e) {
+    e.preventDefault();
+    var target = e.target;
+
+    if (target && target.classList.contains('preview')) {
+      imgPopup.style.display = 'flex';
+      var path = target.parentNode.getAttribute('href');
+      bigImage.setAttribute('src', path);
+      document.body.style.overflow = 'hidden';
+    } // скрытие по клику на подложку
+
+
+    if (target && target.matches('div.popup')) {
+      imgPopup.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (images);
+
+/***/ }),
+
 /***/ "./src/js/modules/modal.js":
 /*!*********************************!*\
   !*** ./src/js/modules/modal.js ***!
   \*********************************/
-/*! exports provided: default, closeModal, openModal */
+/*! exports provided: default, closeModal, closeAllModals, openModal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeModal", function() { return closeModal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeAllModals", function() { return closeAllModals; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "openModal", function() { return openModal; });
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "./node_modules/core-js/modules/web.dom-collections.for-each.js");
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
@@ -18080,8 +18134,8 @@ function closeModal(modalSelector, windows) {
   closeAllModals(windows); // modal.classList.add('hide');
   // modal.classList.remove('show');
 
-  modal.style.display = 'none';
-  document.body.classList.remove('modal-open'); // document.body.style.overflow = '';
+  modal.style.display = 'none'; // document.body.classList.remove('modal-open');
+  // document.body.style.overflow = '';
 }
 
 function closeAllModals(windows) {
@@ -18089,9 +18143,10 @@ function closeAllModals(windows) {
   windows.forEach(function (item) {
     item.style.display = 'none';
   });
+  document.body.classList.remove('modal-open');
 }
 
-var modal = function modal() {
+var modal = function modal(modalState) {
   // closeClickOverlay - по умолчанию модальное окно закрывается при клике на подложку
   var bindModal = function bindModal(triggerSelector, modalSelector, closeSelector, modalTimerId) {
     var closeClickOverlay = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
@@ -18146,6 +18201,7 @@ var modal = function modal() {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (modal);
+
 
 
 

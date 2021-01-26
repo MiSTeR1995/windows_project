@@ -1,19 +1,21 @@
 import checkNumInputs from './checkNumInputs';
+import {closeAllModals} from './modal';
 
 const forms = (state) => {
     const form = document.querySelectorAll('form');
     const inputs = document.querySelectorAll('input');
+    const windows = document.querySelectorAll('[data-modal]'); // все модальные окна со страницы
 
     checkNumInputs('input[name="user_phone"]');
 
     const message = {
         loading: 'Загрузка...',
         succes: 'Спасибо! Скоро мы с вами свяжемся!',
-        failure: 'Что-то пошло не так...'
+        failure: 'Что-то пошло не так...',
     };
 
     // async await - позволяет дождаться результата запроса
-    const postData =  async (url, data) => {
+    const postData = async (url, data) => {
         // сначала оповестим пользователя о статусе запроса
         document.querySelector('.status').textContent = message.loading;
         let result = await fetch(url, {
@@ -26,12 +28,12 @@ const forms = (state) => {
     };
 
     const clearInputs = () => {
-        inputs.forEach(item => {
+        inputs.forEach((item) => {
             item.value = '';
         });
     };
 
-    form.forEach(item => {
+    form.forEach((item) => {
         item.addEventListener('submit', (e) => {
             e.preventDefault(); // блок перезагрузки страницы
 
@@ -51,10 +53,13 @@ const forms = (state) => {
                 }
             }
 
-            postData('assets/server.php',formData)
-                .then(res => {
+            postData('assets/server.php', formData)
+                .then((res) => {
                     console.log(res);
                     statusMessage.textContent = message.succes;
+                    setTimeout(() => {
+                        closeAllModals(windows);
+                    }, 2000);
                 })
                 .catch(() => {
                     statusMessage.textContent = message.failure;
@@ -63,7 +68,7 @@ const forms = (state) => {
                     clearInputs();
                     setTimeout(() => {
                         statusMessage.remove(); // удалить элемент со страницы
-                    }, 5000);
+                    }, 2000);
                 });
         });
     });

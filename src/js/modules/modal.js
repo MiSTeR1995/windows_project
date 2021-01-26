@@ -20,7 +20,7 @@ function closeModal(modalSelector, windows) {
     // modal.classList.remove('show');
     modal.style.display = 'none';
 
-    document.body.classList.remove('modal-open');
+    // document.body.classList.remove('modal-open');
     // document.body.style.overflow = '';
 }
 
@@ -29,9 +29,12 @@ function closeAllModals(windows) {
     windows.forEach((item) => {
         item.style.display = 'none';
     });
+
+    document.body.classList.remove('modal-open');
+
 }
 
-const modal = () => {
+const modal = (modalState) => {
     // closeClickOverlay - по умолчанию модальное окно закрывается при клике на подложку
     const bindModal = (triggerSelector, modalSelector, closeSelector, modalTimerId, closeClickOverlay = true) => {
         const trigger = document.querySelectorAll(triggerSelector); // псевдомассив триггеров
@@ -40,7 +43,6 @@ const modal = () => {
         const windows = document.querySelectorAll('[data-modal]'); // все модальные окна со страницы
 
         trigger.forEach((item) => {
-
             item.addEventListener('click', (e) => {
                 if (e.target) {
                     e.preventDefault(); // отключение действий по умолчанию у элемента
@@ -48,8 +50,6 @@ const modal = () => {
 
                 closeAllModals(windows);
                 openModal(modalSelector, modalTimerId);
-
-
             });
         });
 
@@ -68,7 +68,7 @@ const modal = () => {
 
         // закрытие по клавише esc
         document.addEventListener('keydown', (e) => {
-            if ( e.code === 'Escape' && window.getComputedStyle(modal).display === 'block') {
+            if (e.code === 'Escape' && window.getComputedStyle(modal).display === 'block') {
                 closeModal(modalSelector, windows);
             }
         });
@@ -90,9 +90,9 @@ const modal = () => {
 
     // кнопка далее в выборе профиля
     bindModal('.popup_calc_profile_button', '.popup_calc_end', '.popup_calc_end_close', modalTimerId, false);
-
 };
 
 export default modal;
 export {closeModal};
+export {closeAllModals};
 export {openModal};

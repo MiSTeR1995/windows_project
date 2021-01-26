@@ -44,6 +44,7 @@ const changeModalState = (state) => {
                 }
 
                 console.log(state);
+                console.log(state.form);
             });
         });
     }
