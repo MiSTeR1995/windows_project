@@ -1,11 +1,15 @@
-function openModal(modalSelector, modalTimerId) {
+function openModal(modalSelector, modalTimerId, scroll) {
     const modal = document.querySelector(modalSelector);
 
     // modal.classList.add('show');
     // modal.classList.remove('hide');
     modal.style.display = 'block';
-    document.body.classList.add('modal-open'); // класс из bootstrap
-    // document.body.style.overflow = 'hidden';
+    // document.body.classList.add('modal-open'); // класс из bootstrap
+    document.body.style.overflow = 'hidden';
+
+    // отступ с учетом скролла
+    document.body.style.marginRight = `${scroll}px`;
+
     if (modalTimerId) {
         clearInterval(modalTimerId);
     }
@@ -19,6 +23,7 @@ function closeModal(modalSelector, windows) {
     // modal.classList.add('hide');
     // modal.classList.remove('show');
     modal.style.display = 'none';
+    document.body.style.marginRight = `0px`;
 
     // document.body.classList.remove('modal-open');
     // document.body.style.overflow = '';
@@ -30,7 +35,11 @@ function closeAllModals(windows) {
         item.style.display = 'none';
     });
 
-    document.body.classList.remove('modal-open');
+    // document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.marginRight = `0px`;
+
+
 
 }
 
@@ -41,6 +50,7 @@ const modal = (modalState) => {
         const modal = document.querySelector(modalSelector);
         const close = document.querySelector(closeSelector);
         const windows = document.querySelectorAll('[data-modal]'); // все модальные окна со страницы
+        const scroll = calcScroll();
 
         trigger.forEach((item) => {
             item.addEventListener('click', (e) => {
@@ -49,7 +59,7 @@ const modal = (modalState) => {
                 }
 
                 closeAllModals(windows);
-                openModal(modalSelector, modalTimerId);
+                openModal(modalSelector, modalTimerId, scroll);
             });
         });
 
@@ -73,6 +83,27 @@ const modal = (modalState) => {
             }
         });
     };
+
+    // подсчет размера скролла
+    function calcScroll() {
+
+        let div = document.createElement('div');
+
+        // чтобы провести расчеты, нужно чтобы он существовал на странице
+        div.style.width = '50px';
+        div.style.height = '50px';
+        div.style.overflowY = 'scroll';
+        div.style.visibility = 'hidden';
+
+        document.body.appendChild(div);
+
+        // Теперь вычисляем сам размер прокрутки
+        let scrollWidth = div.offsetWidth - div.clientWidth; // полная ширина - ширина с padding и главным контентом(без скролла)
+
+        // теперь можно удалить блок
+        div.remove();
+        return scrollWidth;
+    }
 
     const modalTimerId = setTimeout(() => openModal('.popup', modalTimerId), 60000);
 

@@ -18116,13 +18116,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_0__);
 
 
-function openModal(modalSelector, modalTimerId) {
+function openModal(modalSelector, modalTimerId, scroll) {
   var modal = document.querySelector(modalSelector); // modal.classList.add('show');
   // modal.classList.remove('hide');
 
-  modal.style.display = 'block';
-  document.body.classList.add('modal-open'); // класс из bootstrap
-  // document.body.style.overflow = 'hidden';
+  modal.style.display = 'block'; // document.body.classList.add('modal-open'); // класс из bootstrap
+
+  document.body.style.overflow = 'hidden'; // отступ с учетом скролла
+
+  document.body.style.marginRight = "".concat(scroll, "px");
 
   if (modalTimerId) {
     clearInterval(modalTimerId);
@@ -18134,7 +18136,8 @@ function closeModal(modalSelector, windows) {
   closeAllModals(windows); // modal.classList.add('hide');
   // modal.classList.remove('show');
 
-  modal.style.display = 'none'; // document.body.classList.remove('modal-open');
+  modal.style.display = 'none';
+  document.body.style.marginRight = "0px"; // document.body.classList.remove('modal-open');
   // document.body.style.overflow = '';
 }
 
@@ -18142,8 +18145,10 @@ function closeAllModals(windows) {
   // закрытие всех модальых окон на странице, когда их вызвано несколько (калькулятор)
   windows.forEach(function (item) {
     item.style.display = 'none';
-  });
-  document.body.classList.remove('modal-open');
+  }); // document.body.classList.remove('modal-open');
+
+  document.body.style.overflow = '';
+  document.body.style.marginRight = "0px";
 }
 
 var modal = function modal(modalState) {
@@ -18156,6 +18161,7 @@ var modal = function modal(modalState) {
     var close = document.querySelector(closeSelector);
     var windows = document.querySelectorAll('[data-modal]'); // все модальные окна со страницы
 
+    var scroll = calcScroll();
     trigger.forEach(function (item) {
       item.addEventListener('click', function (e) {
         if (e.target) {
@@ -18163,7 +18169,7 @@ var modal = function modal(modalState) {
         }
 
         closeAllModals(windows);
-        openModal(modalSelector, modalTimerId);
+        openModal(modalSelector, modalTimerId, scroll);
       });
     }); // закрытие по крестику
 
@@ -18183,7 +18189,24 @@ var modal = function modal(modalState) {
         closeModal(modalSelector, windows);
       }
     });
-  };
+  }; // подсчет размера скролла
+
+
+  function calcScroll() {
+    var div = document.createElement('div'); // чтобы провести расчеты, нужно чтобы он существовал на странице
+
+    div.style.width = '50px';
+    div.style.height = '50px';
+    div.style.overflowY = 'scroll';
+    div.style.visibility = 'hidden';
+    document.body.appendChild(div); // Теперь вычисляем сам размер прокрутки
+
+    var scrollWidth = div.offsetWidth - div.clientWidth; // полная ширина - ширина с padding и главным контентом(без скролла)
+    // теперь можно удалить блок
+
+    div.remove();
+    return scrollWidth;
+  }
 
   var modalTimerId = setTimeout(function () {
     return openModal('.popup', modalTimerId);
